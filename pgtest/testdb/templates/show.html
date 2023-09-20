@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Geoportal for Roads Managment</title>
+    <link rel="stylesheet" href="../static/css/style.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+        crossorigin="anonymous"
+    />
+    <!-- leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+        crossorigin=""
+    />
+    <!-- leaflet-search CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet-search@2.9.0/dist/leaflet-search.min.css"
+        integrity="sha384-2O3WtFGRKgscDDbCwGr0PxV65P4XVfj+HakjI9l9C1kTk6ouF7XT4qEJGGDwtAL0"
+        crossorigin=""
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+    />
+
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script
+        src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+        integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+        crossorigin=""
+    ></script>
+    <!-- leaflet-search script -->
+    <script
+        src="https://unpkg.com/leaflet-search@2.9.0/dist/leaflet-search.min.js"
+        integrity="sha384-zlVfPvZv3/F6Bw3pg9+Tyc79ApxOx5taWFT4v+zysJZcBFp/qpuVqgDCGLm9CGEG"
+        crossorigin=""
+    ></script>
+    <style>
+       #map {
+        height: 100vh;
+            margin-left: auto;
+            margin-right: 0;
+            border: 1px solid black;
+            margin: 4px;    
+}
+
+.container {
+    margin: 5px;
+    
+}
+        .row {
+    margin-right: -320px;
+}
+    </style>
+</head>
+<body>
+<div class="container">
+        <h1 class="text-center my-4" style="margin-left: 140px;">Employee Data and Map</h1>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="table-responsive">
+            <table class="table table-striped table-bordered table-sm">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>User ID</th>
+                        <th>User Name</th>
+                        <th>User Email</th>
+                        <th>User Contact</th>
+                        <th>Cracks Latitude</th>
+                        <th>Cracks Longitude</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td>{{ employee.eid }}</td>
+                        <td>{{ employee.ename }}</td>
+                        <td>{{ employee.eemail }}</td>
+                        <td>{{ employee.econtact }}</td>
+                        <td>{{ employee.lat }}</td>
+                        <td>{{ employee.lng }}</td>
+                        <td>
+                            <a href="/edit/{{ employee.id }}"><span class="glyphicon glyphicon-pencil" >Edit</span></a>
+                            <a href="/delete/{{ employee.id }}">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            <div class="text-center">
+                <a href="/emp" class="btn btn-primary">Add New Record</a>
+            </div>
+            </div>
+
+        <div class="col-lg-6">
+            <div id="map"></div>
+        </div>
+    </div>
+</div>
+<script>
+    var map = L.map("map").setView([ 41.13885926181135, 15.514851712897723], 14);
+    var OpenStreetMap_Mapnik = L.tileLayer(
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom: 30,
+            attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }
+    ).addTo(map);
+    
+    
+  
+      var wmsLayer = L.tileLayer.wms('http://localhost:8080/geoserver/ne/wms', {
+        layers: 'ne:Strade', // Replace with your layer name from GeoServer
+        format: 'image/png',
+        transparent: true
+      }).addTo(map);
+    
+
+      {% comment %} var ItalyBoundry = L.tileLayer.wms('http://localhost:8080/geoserver/ne/wms', {
+        layers: 'ne:ITA_adm2', // Replace with your layer name from GeoServer
+        format: 'image/png',
+        transparent: true
+      }).addTo(map); {% endcomment %}
+
+    var googleMapsLayer = L.tileLayer(
+        "https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+        {
+            maxZoom: 19,
+            subdomains: ["mt0", "mt1", "mt2", "mt3"],
+        }
+    );
+
+    var overlayMaps = {
+        "OpenStreetMap": OpenStreetMap_Mapnik,
+        "Google Maps": googleMapsLayer,
+       
+    };
+
+    L.control.layers(overlayMaps).addTo(map);
+
+
+    var geocoder = L.Control.geocoder({
+        defaultMarkGeocode: true
+      })
+        .on('markgeocode', function(e) {
+          var bbox = e.geocode.bbox;
+          var poly = L.polygon([
+            bbox.getSouthEast(),
+            bbox.getNorthEast(),
+            bbox.getNorthWest(),
+            bbox.getSouthWest()
+          ]).addTo(map);
+          map.fitBounds(poly.getBounds());
+        })
+        .addTo(map);
+
+    {% for item in employees %}
+    L.marker([{{item.lat}}, {{item.lng}}]).bindPopup("<strong>{{item.ename}}</strong><br/>Contact: {{item.econtact}}").addTo(map).on('popupopen', function (e) {
+        // console.log(e.popup.getContent())
+    });
+    {% endfor %}
+
+    
+</script>
+</body>
+</html>

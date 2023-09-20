@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Index</title>
+    <link rel="stylesheet" href="../static/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <!-- leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+      integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+      crossorigin=""
+    />
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script
+      src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+      integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+      crossorigin=""
+    ></script>
+    <style>
+      #map {
+            height: 80vh;
+            width: 100%;
+            border: 1px solid black;
+            margin: 4px;
+            margin-left: 20px;
+            margin-top: 40px;
+        }
+        .form-container {
+            border: 1px solid black;
+            padding: 20px;
+            margin-bottom: 10px;
+            margin-top: 15px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+          <div class="col-md-6 form-container">
+        <form method="POST" class="post-form " action="/emp">
+            {% csrf_token %}
+              <div class="form-group row">
+           
+                  <h3 style="margin-left: 130px;">Enter Details</h3>
+                            </div>
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">User Id:</label>
+                <div class="col-sm-4">{{ form.eid }}</div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">User Name:</label>
+                <div class="col-sm-4" id="lat">{{ form.ename }}</div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">User Email:</label>
+                <div class="col-sm-4">{{ form.eemail }}</div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">User Contact:</label>
+                <div class="col-sm-4">{{ form.econtact }}</div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Cracks Latitude:</label>
+                <div class="col-sm-4">{{ form.lat }}</div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Cracks Longitude:</label>
+                <div class="col-sm-4">{{ form.lng }}</div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label"></label>
+                <div class="col-sm-4">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button onclick="window.history.back()" class="btn btn-danger">Cancel</button>
+                </div>
+              </div>
+           
+          </form>
+        </div>
+        <div class="col-md-6">
+          <div id="map"></div>
+        </div>
+    </div>
+        <script>
+          var map = L.map("map").setView([ 41.13885926181135, 15.514851712897723], 14);
+          var OpenStreetMap_Mapnik = L.tileLayer(
+              "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+              {
+                  maxZoom: 19,
+                  attribution:
+                      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              }
+          ).addTo(map);
+          
+          
+        
+            var wmsLayer = L.tileLayer.wms('http://localhost:8080/geoserver/ne/wms', {
+              layers: 'ne:Strade', // Replace with your layer name from GeoServer
+              format: 'image/png',
+              transparent: true
+            }).addTo(map);
+          
+    
+      
+          var googleMapsLayer = L.tileLayer(
+              "https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+              {
+                  maxZoom: 30,
+                  subdomains: ["mt0", "mt1", "mt2", "mt3"],
+              }
+          );
+      
+          var overlayMaps = {
+              "OpenStreetMap": OpenStreetMap_Mapnik,
+              "Google Maps": googleMapsLayer,
+             
+          };
+      
+          L.control.layers(overlayMaps).addTo(map);
+    
+          var marker = L.marker();
+    
+    function onMapClick(e) {
+        marker
+            .setLatLng(e.latlng)
+            .addTo(map);
+            console.log(e.latlng, 'lat lng');
+            document.getElementById('id_lat').value = e.latlng.lat.toFixed(10)
+            document.getElementById('id_lng').value = e.latlng.lng.toFixed(10)
+    }
+    
+    map.on('click', onMapClick);
+    
+         
+        </script>
+      </body>
+    </html>
+    
