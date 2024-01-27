@@ -6,7 +6,9 @@ class Employee(models.Model):
     eemail = models.EmailField()  
     econtact = models.CharField(max_length=15) 
     lat = models.DecimalField(max_digits=19, decimal_places=10)
-    lng = models.DecimalField(max_digits=19, decimal_places=10) 
+    lng = models.DecimalField(max_digits=19, decimal_places=10)
+    image = models.ImageField(upload_to='road_defect_images/', null=True, blank=True)
+    image_filename = models.CharField(max_length=255, null=True, blank=True)
     class Meta:  
         db_table = "employee" 
 

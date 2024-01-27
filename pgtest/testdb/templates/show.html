@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -66,6 +67,9 @@
       <h1 class="text-center my-4" style="background-color: #8eacff ; padding: 1%;">
         GIS Road Managment System
       </h1>
+      <div class="text-right">
+        <a href="/emp" class="btn btn-primary" style="margin: 1%;">Add New Record</a>
+      </div>
       <div class="row">
         <div class="col-lg-6">
           <div class="table-responsive">
@@ -78,6 +82,7 @@
                   <th>User Contact</th>
                   <th>Cracks Latitude</th>
                   <th>Cracks Longitude</th>
+                  <th>View Image</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -91,6 +96,13 @@
                   <td>{{ employee.lat }}</td>
                   <td>{{ employee.lng }}</td>
                   <td>
+                    {% if employee.image_filename %}
+                        <a href="{{ employee.image.url }}" target="_blank" class="btn btn-primary">View Image</a>
+                    {% else %}
+                        No Image
+                    {% endif %}
+                </td>                
+                  <td>
                     <a href="/edit/{{ employee.id }}"
                       ><span class="glyphicon glyphicon-pencil">Edit</span></a
                     >
@@ -101,9 +113,7 @@
               </tbody>
             </table>
           </div>
-          <div class="text-center">
-            <a href="/emp" class="btn btn-primary">Add New Record</a>
-          </div>
+         
         </div>
 
         <div class="col-lg-6">
