@@ -17,9 +17,10 @@ from testdb.models import Employee
 
 def emp(request):  
     if request.method == "POST":  
-        form = EmployeeForm(request.POST)  
+        form = EmployeeForm(request.POST, request.FILES)
         if form.is_valid():  
-            try:  
+            try:
+                print(request.FILES)
                 form.save()  
                 return redirect('/show')  
             except:  
