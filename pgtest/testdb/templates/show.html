@@ -79,7 +79,6 @@
                   <th>User ID</th>
                   <th>User Name</th>
                   <th>User Email</th>
-                  <th>User Contact</th>
                   <th>Cracks Latitude</th>
                   <th>Cracks Longitude</th>
                   <th>View Image</th>
@@ -92,12 +91,11 @@
                   <td>{{ employee.eid }}</td>
                   <td>{{ employee.ename }}</td>
                   <td>{{ employee.eemail }}</td>
-                  <td>{{ employee.econtact }}</td>
                   <td>{{ employee.lat }}</td>
                   <td>{{ employee.lng }}</td>
                   <td>
                     {% if employee.image_filename %}
-                        <a href="{{ employee.image.url }}" target="_blank" class="btn btn-primary">View Image</a>
+                        <a href="{{ road_data.image.url }}" target="_blank" class="btn btn-primary">View Image</a>
                     {% else %}
                         No Image
                     {% endif %}

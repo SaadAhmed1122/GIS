@@ -1,10 +1,18 @@
 from django import forms  
-from testdb.models import Employee
+from testdb.models import RoadData
 
-class EmployeeForm(forms.ModelForm):  
+class RoadForm(forms.ModelForm):  
     class Meta:  
-        model = Employee  
+        model = RoadData  
         fields = "__all__"
+        
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['user'].initial = user.pk
+            self.fields['user'].widget.attrs['disabled'] = True
+        
     def save(self, commit=True):
         instance = super().save(commit=False)
         image = self.cleaned_data.get('image', None)
