@@ -1,50 +1,45 @@
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# from .models import Banks
-
-# # # Create your views here.
-# # def index (request):
-# #     return render (request, 'templates/testdb/index.html')
-# def say_hello(request):
-#     return render(request, 'index.html')
-# def index (request):
-# #Access all rows of banks table
-#     banks = Banks.objects.all()
-#     return render (request, 'testdb/index.html', {'banks': banks})
 from django.shortcuts import render, redirect  
-from testdb.forms import EmployeeForm
-from testdb.models import Employee  
+from testdb.forms import RoadForm
+from testdb.models import RoadData  
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
+
+@login_required
 def emp(request):  
-    if request.method == "POST":  
-        form = EmployeeForm(request.POST, request.FILES)
+    if request.method == "POST":
+        form = RoadForm(request.POST, request.FILES, user=request.user)
+        print(form)
         if form.is_valid():  
             try:
                 print(request.FILES)
-                form.save()  
+                form.save()
                 return redirect('/show')  
             except:  
                 pass  
     else:  # add indentation here
-        form = EmployeeForm()  
+        form = RoadForm(user=request.user)  
     return render(request,'index.html',{'form':form})
   
 def show(request):  
-    employees = Employee.objects.all()  
-    return render(request,"show.html",{'employees':employees})  
+    roads_data = RoadData.objects.all()
+    print(roads_data)  
+    return render(request,"show.html",{'roads_data':roads_data})  
 def edit(request, id):  
-    employee = Employee.objects.get(id=id)  
-    return render(request,'edit.html', {'employee':employee})  
+    road_data = RoadData.objects.get(id=id)  
+    return render(request,'edit.html', {'road_data':road_data})  
 def update(request, id):  
-    employee = Employee.objects.get(id=id)  
-    form = EmployeeForm(request.POST, instance = employee)  
+    road_data = RoadData.objects.get(id=id)  
+    form = RoadForm(request.POST, instance = road_data)  
     if form.is_valid():  
         form.save()  
         return redirect("/show")  
-    return render(request, 'edit.html', {'employee': employee})  
+    return render(request, 'edit.html', {'road_data': road_data})  
 def destroy(request, id):  
-    employee = Employee.objects.get(id=id)  
-    employee.delete()  
+    road_data = RoadData.objects.get(id=id)  
+    road_data.delete()  
     return redirect("/show")  
 def add_business(request):
     # your view logic here
