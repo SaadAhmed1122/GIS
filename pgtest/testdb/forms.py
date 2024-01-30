@@ -1,7 +1,13 @@
 from django import forms  
 from testdb.models import RoadData
 
-class RoadForm(forms.ModelForm):  
+class RoadForm(forms.ModelForm):
+    TYPE_CHOICES = [
+        ('road_defect', 'Road Defect'),
+        ('inspection', 'Inspection'),
+    ]
+
+    etype = forms.ChoiceField(choices=TYPE_CHOICES, label='Type')  
     class Meta:  
         model = RoadData  
         fields = "__all__"
@@ -10,11 +16,17 @@ class RoadForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         if user:
-            self.fields['user'].initial = user.pk
-            self.fields['user'].widget.attrs['disabled'] = True
+            self.fields['user'].initial = user
+            self.fields['user'].required = False
+            self.fields['user'].widget = forms.HiddenInput()
+
+            # Set the initial value to the current user
+            # self.fields['user'].widget.attrs['disabled'] = True
+        print(user)
         
     def save(self, commit=True):
         instance = super().save(commit=False)
+        # instance.user = self.user
         image = self.cleaned_data.get('image', None)
         if image:
             print(f'Saving image: {image.name}')

@@ -12,4 +12,4 @@ class RoadData(models.Model):
     image_filename = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:  
-        db_table = "road_data"
+        db_table = "road_data"    
