@@ -34,7 +34,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('testdb/',include('testdb.urls')),
     # path('', views.BusinessView.as_view(), name='BusinessView'),
-    path('addBusiness/', views.add_business, name='add_business'),
+    # path('addBusiness/', views.add_business, name='add_business'),
     path('emp', views.emp),  
     path('show',views.show), 
     path('',views.show),  

@@ -1,0 +1,19 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}My Site{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}">
+  <script src="{% static 'leaflet/leaflet.js' %}"></script>
+</head>
+<body>
+  <div id="header">
+    <h1>My Site</h1>
+  </div>
+  <div id="content">
+    {% block content %}
+    {% endblock %}
+  </div>
+</body>
+</html>

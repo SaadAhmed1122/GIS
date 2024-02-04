@@ -23,6 +23,8 @@
       integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
       crossorigin=""
     ></script>
+    <script src="https://unpkg.com/leaflet-geometryutil@0.9.0"></script>
+
     <style>
       #map {
             height: 80vh;
@@ -78,6 +80,10 @@
                 <div class="col-sm-4">{{ form.lng }}</div>
               </div>
               <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Geometry :</label>
+                <div class="col-sm-4">{{ form.geometry }}</div>
+              </div>
+              <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Upload Image:</label>
                 <div class="col-sm-4">
                     {{ form.image }}
@@ -90,7 +96,6 @@
                   <button onclick="window.history.back()" class="btn btn-danger">Cancel</button>
                 </div>
               </div>
-           
           </form>
         </div>
         <div class="col-md-6">
@@ -137,12 +142,36 @@
           var marker = L.marker();
     
     function onMapClick(e) {
-        marker
-            .setLatLng(e.latlng)
-            .addTo(map);
-            console.log(e.latlng, 'lat lng');
-            document.getElementById('id_lat').value = e.latlng.lat.toFixed(10)
-            document.getElementById('id_lng').value = e.latlng.lng.toFixed(10)
+      console.log("Map clicked at:", e.latlng);
+      var latlng = e.latlng;
+      var nearestPoint = null;
+      marker
+              .setLatLng(e.latlng)
+              .addTo(map);
+          document.getElementById('id_lat').value = e.latlng.lat.toFixed(10);
+          document.getElementById('id_lng').value = e.latlng.lng.toFixed(10);
+
+    // Get the nearest point on the WMS layer
+      wmsLayer.eachLayer(function (layer) {
+        var layerLatLngs = layer.getLatLngs();
+        var nearest = L.GeometryUtil.closestLayerPoint(map, layerLatLngs, latlng);
+        if (nearestPoint === null || nearest.distance < nearestPoint.distance) {
+            nearestPoint = nearest;
+        }
+      });
+
+      if (nearestPoint !== null) {
+      
+        // Calculate the geometry
+          var geometry = L.GeometryUtil.toGeoJSON(wmsLayer);
+          document.getElementById('id_geometry').value = JSON.stringify(geometry);
+      }
+        // marker
+        //     .setLatLng(e.latlng)
+        //     .addTo(map);
+        //     console.log(e.latlng, 'lat lng');
+        //     document.getElementById('id_lat').value = e.latlng.lat.toFixed(10)
+        //     document.getElementById('id_lng').value = e.latlng.lng.toFixed(10)
     }
     
     map.on('click', onMapClick);

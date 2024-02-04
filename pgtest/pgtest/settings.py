@@ -36,9 +36,11 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.gis',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'testdb',
+    'leaflet',
     
 ]
 
@@ -78,15 +80,15 @@ WSGI_APPLICATION = 'pgtest.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'GIS', 
         'USER': 'postgres', 
         'PASSWORD': 'root',
-        'HOST': '127.0.0.1', 
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
-
+GDAL_LIBRARY_PATH = r'C:\Users\saada\anaconda3\Lib\site-packages\osgeo\gdal304.dll'
 
 
 # Password validation
@@ -124,6 +126,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER' : (0.23,34.34),
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
